@@ -5,41 +5,44 @@ import * as vscode from 'vscode';
 let interval: NodeJS.Timeout | null = null;
 const output = vscode.window.createOutputChannel('restart-ts-server')
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
 	const typescript = vscode.extensions.getExtension('vscode.typescript-language-features')
 
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let start = vscode.commands.registerCommand('ts-auto-restart-30sec.start', () => {
-		vscode.window.showInformationMessage('Restarting ts every 30 sec !');
-		if (interval) {
-			clearInterval(interval);
-			interval = null;
-		}
-		interval = setInterval(() => {
-			if (typescript && typescript.isActive) {
-				vscode.commands.executeCommand('typescript.restartTsServer')
-				output.appendLine(`[${new Date().toLocaleString()}] Restarting TS Server !`)
+	let start = vscode.commands.registerCommand('ts-auto-restart.start', () => {
+		vscode.window.showInputBox({
+			title: 'What interval do you want to restart TS Server ? (default 30sec)',
+			validateInput(value) {
+				return isNaN(Number(value)) ? 'Please input an Int' : null;
 			}
-		}, 30000);
+		}).then((value) => {
+			const seconds = parseInt(value || '30', 10);
 
+			if (interval) {
+				clearInterval(interval);
+				interval = null;
+			}
+
+			vscode.window.showInformationMessage(`Restart TS Server every ${seconds} seconds !`)
+			interval = setInterval(() => {
+				if (typescript && typescript.isActive) {
+					vscode.commands.executeCommand('typescript.restartTsServer')
+					output.appendLine(`[${new Date().toLocaleString()}] Restarting TS Server !`)
+				}
+			}, seconds * 1000);
+		})
 	});
 
-	 vscode.commands.registerCommand('ts-auto-restart-30sec.stop', () => {
+	let end = vscode.commands.registerCommand('ts-auto-restart-30sec.stop', () => {
 		if (interval) {
 			clearInterval(interval);
 			interval = null;
 			output.appendLine(`[${new Date().toLocaleString()}] Stop restart interval !`)
-
 		}
 	})
 
-	context.subscriptions.push(start);
+	context.subscriptions.push(start, end);
 }
 
 // This method is called when your extension is deactivated

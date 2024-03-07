@@ -1,7 +1,7 @@
 {
-  "name": "ts-auto-restart-30sec",
-  "displayName": "ts-auto-restart-30sec",
-  "description": "Restart your vscode ts server every 30sec",
+  "name": "ts-auto-restart",
+  "displayName": "ts-auto-restart",
+  "description": "Restart your vscode ts server with an interval",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.87.0"
@@ -14,12 +14,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "ts-auto-restart-30sec.start",
-        "title": "ts-auto-restart-30sec: Start"
+        "command": "ts-auto-restart.start",
+        "title": "ts-auto-restart: Start"
       },
       {
-        "command": "ts-auto-restart-30sec.stop",
-        "title": "ts-auto-restart-30sec: Stop"
+        "command": "ts-auto-restart.stop",
+        "title": "ts-auto-restart: Stop"
       }
     ]
   },
